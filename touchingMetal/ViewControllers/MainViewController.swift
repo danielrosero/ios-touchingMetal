@@ -29,7 +29,7 @@ class MainViewController: UIViewController {
         
         metalView = MTKView(frame: view.frame)
         metalView.device = device
-        metalView.clearColor = MTLClearColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 1.0)
+        metalView.clearColor = MTLClearColor(red: 0.87, green: 0.88, blue: 0.85, alpha: 1.0)
         
         
         renderer = Renderer(view: metalView)

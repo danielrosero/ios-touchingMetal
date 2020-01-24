@@ -35,8 +35,8 @@ class Renderer: NSObject {
     var enableTextureForKernel: Bool?
     
     //    The models what we are going to render in the scene
-    let scan: Model
-    let completeBody: Model
+    let cat,dog: Model
+    
     
     //    ****
     
@@ -44,10 +44,10 @@ class Renderer: NSObject {
     var iteration = 0
     //    ****
     
-//    //    ignore this, I was experimenting trying to change size of the drawableTextureForKernel on runtime.
-//    var sizeOfComputedTexture: Int = 0
-//    //    ****
-//
+    //    //    ignore this, I was experimenting trying to change size of the drawableTextureForKernel on runtime.
+    //    var sizeOfComputedTexture: Int = 0
+    //    //    ****
+    //
     
     init(view: MTKView) {
         guard let device = MTLCreateSystemDefaultDevice(),
@@ -65,7 +65,7 @@ class Renderer: NSObject {
         samplerState = Renderer.buildSamplerState(device: device)
         
         
-        camera.target = [0, 0.8, 0]
+        camera.target = [0, 1.2, -0.5]
         camera.distance = 3
         
         
@@ -84,33 +84,39 @@ class Renderer: NSObject {
         
         
         
-//        Initializing the models, set their position, scale and do a rotation transformation
+        //        Initializing the models, set their position, scale and do a rotation transformation
         
-//        Scan model
+        //        Cat model
         
-        scan = Model(name: "face",vertexDescriptor: vertexDescriptor,textureFile: "face.jpg", textureLoaderOptions: textureLoaderOptionsWithFlip)
-        scan.transform.position = [0, 1.7, 1.5]
-        scan.transform.scale = 0.08
-                scan.transform.rotation = vector_float3(radians(fromDegrees: 180),radians(fromDegrees: 180),0)
+        cat = Model(name: "cat",vertexDescriptor: vertexDescriptor,textureFile: "cat.tga", textureLoaderOptions: textureLoaderOptionsWithFlip)
+        cat.transform.position = [-1, -0.5, 1.5]
+        cat.transform.scale = 0.08
         
-//        ****
-        
-//        Body model
-        
-        completeBody = Model(name: "completebody",vertexDescriptor: vertexDescriptor,textureFile: "bodyTexture.jpg", textureLoaderOptions: textureLoaderOptionsWithoutFlip)
-        completeBody.transform.position = [0, 0.8, 1]
-        completeBody.transform.scale = 0.08
-        completeBody.transform.rotation = vector_float3(radians(fromDegrees: 180),radians(fromDegrees: 180),0)
+        cat.transform.rotation = vector_float3(0,radians(fromDegrees: 180),0)
         
         
-//        ****
+        //        ****
+        
+        
+        //        Dog model
+        
+        dog = Model(name: "dog",vertexDescriptor: vertexDescriptor,textureFile: "dog.tga", textureLoaderOptions: textureLoaderOptionsWithFlip)
+        dog.transform.position = [1, -0.5, 1.5]
+        dog.transform.scale = 0.018
+        
+        dog.transform.rotation = vector_float3(0,radians(fromDegrees: 180),0)
+        
+        
+        //        ****
+        
+        
         
         
         view.depthStencilPixelFormat = .depth32Float
         
-//        The kernel texture is not going to be used by default
+        //        The kernel texture is not going to be used by default
         enableTextureForKernel=false
-//        ****
+        //        ****
         
         
         
@@ -265,7 +271,7 @@ extension Renderer: MTKViewDelegate {
         
         timer += 0.05
         
-
+        
         
         var viewTransform = Transform()
         viewTransform.position.y = 1.0
@@ -308,7 +314,7 @@ extension Renderer: MTKViewDelegate {
         
         commandEncoder.setDepthStencilState(depthStencilState)
         
-        uniforms.modelMatrix = scan.transform.matrix
+        
         
         
         
@@ -318,9 +324,10 @@ extension Renderer: MTKViewDelegate {
         //    ------------------------------------------
         
         
-        let models = [scan,completeBody]
+        let models = [cat,dog]
         
         for model in models {
+            
             
             
             uniforms.modelMatrix = model.transform.matrix
@@ -331,13 +338,13 @@ extension Renderer: MTKViewDelegate {
                                           length: MemoryLayout<Uniforms>.stride,
                                           index: 21)
             
-     
+            
             
             if(enableTextureForKernel! == false){
-
+                
                 commandEncoder.setFragmentTexture(model.texture, index: 0)
             }else{
-
+                
                 commandEncoder.setFragmentTexture(drawableTextureForKernel, index: 0)
             }
             
@@ -354,10 +361,10 @@ extension Renderer: MTKViewDelegate {
                 for vertexBuffer in mtkMesh.vertexBuffers {
                     
                     commandEncoder.setVertexBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: 0)
-
+                    
                     
                     for submesh in mtkMesh.submeshes {
-                      
+                        
                         commandEncoder.drawIndexedPrimitives(type: .triangle,
                                                              indexCount: submesh.indexCount,
                                                              indexType: submesh.indexType,
@@ -367,7 +374,7 @@ extension Renderer: MTKViewDelegate {
                         
                         
                         
-
+                        
                     }
                 }
             }
