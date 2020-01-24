@@ -1,5 +1,7 @@
 ## Example of 3D rendering with Metal and Swift
 
+![](demovideo.gif)
+
 ### Basically you will find in this Swift project:
 
 * 3D Model loading, texturizing and rendering.
