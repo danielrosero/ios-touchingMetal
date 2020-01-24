@@ -1,5 +1,3 @@
-# ios-metal-tutorials
-
 ## Example of 3D rendering with Metal and Swift
 
 ### Basically you will find in this Swift project:
